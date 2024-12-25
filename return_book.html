@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Book</title>
+    <link rel="stylesheet" href="./style/return.css">
+</head>
+<body>
+<header>  
+    <img src="https://www.mgmlcha.org/images/logos/mgmlogo.png" alt="College Logo" class="logo">
+    <nav>
+        <ul class="list">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="http://localhost/library_final/book.php">Books</a></li>
+            <li><a href="http://localhost/library_final/add-book.php">Add New Book</a></li>
+            <li><a href="http://localhost/library_final/return-book.php">Return Books</a></li>
+            <li><a href="http://localhost/library_final/loan_book.php">Loan Book</a></li>
+            <li><a href="http://localhost/library_final/loan.php">Loaned Book</a></li>
+            <li><a href="http://localhost/library_final/borrowers.php">Student Id</a></li>
+        </ul>
+    </nav>
+</header>
+
+<h1>Return Book</h1>
+<!-- Return Book Form -->
+<form action="http://localhost/library_final/process_return.php" method="POST">
+   <!-- Return Book Form -->
+
+    <label for="borrower_id">Borrower ID:</label>
+     
+        <input type="text" id="borrower_id" name="borrower_id" required><br>
+    </select>
+  
+    <label for="referral_code">Referral Code:</label>
+    <input type="text" id="referral_code" name="referral_code" required><br>
+  
+    <label for="return_date">Return Date:</label>
+    <input type="date" id="return_date" name="return_date" required><br>
+  
+    <input type="submit" value="Return Book">
+  </form>
+  
+</body>
+</html>
+  

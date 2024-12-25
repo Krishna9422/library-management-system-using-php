@@ -1,0 +1,233 @@
+<?php
+include 'db.php'; // Include the database connection
+
+// Get ISBN and Book ID from the GET parameters
+$isbn = $_GET['isbn'];
+$book_id = $_GET['book_id'];
+
+// SQL query to fetch borrower details along with borrow date
+$sql = "
+    SELECT 
+        l.borrower_id,
+        b.borrower_name,
+        l.referral_code,
+        l.borrow_date
+    FROM loans l
+    JOIN borrowers b ON l.borrower_id = b.id
+    WHERE l.isbn = '$isbn' AND l.book_id = '$book_id'
+";
+
+$result = $conn->query($sql);
+
+$borrowers = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $borrowers[] = $row;
+    }
+}
+
+// Return the borrower data as JSON
+echo json_encode($borrowers);
+?>
+
+
+
+
+
+loan..php
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library - Loaned Books</title>
+    <style>
+        /* Floating box styling */
+        .floating-box {
+            background-color: #f3e0f3; /* Light purple background */
+            padding: 15px;
+            border-radius: 10px;
+            position: absolute;
+            display: none;
+            width: 300px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .floating-box ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .floating-box li {
+            margin: 10px 0;
+        }
+        .borrower-link {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Table to display loaned books -->
+<table border="1">
+    <thead>
+        <tr>
+            <th>Book ID</th>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Loaned Copies</th>
+            <th>Available Copies</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        include 'db.php'; // Include the database connection
+
+        // SQL query to get books with loaned copies only
+        $sql = "
+            SELECT 
+                b.book_id, 
+                b.isbn, 
+                b.title, 
+                b.author, 
+                b.publishing_year, 
+                b.total_copies,
+                COALESCE(l.loaned_copies, 0) AS loaned_copies,
+                (b.total_copies - COALESCE(l.loaned_copies, 0)) AS available_copies
+            FROM books b
+            LEFT JOIN (
+                SELECT isbn, COUNT(*) AS loaned_copies 
+                FROM loans 
+                GROUP BY isbn
+            ) l ON b.isbn = l.isbn
+            WHERE l.loaned_copies > 0
+        ";
+
+        $result = $conn->query($sql);
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $isbn = $row['isbn'];
+                $book_id = $row['book_id'];
+
+                // Fetch borrower count
+                $borrowerSql = "
+                    SELECT COUNT(*) AS borrower_count 
+                    FROM loans 
+                    WHERE isbn = '$isbn' AND book_id = '$book_id'
+                ";
+                $borrowerResult = $conn->query($borrowerSql);
+                $borrowerRow = $borrowerResult->fetch_assoc();
+                $borrowerCount = $borrowerRow['borrower_count'];
+
+                echo "<tr>
+                    <td>{$row['book_id']}</td>
+                    <td>{$isbn}</td>
+                    <td>{$row['title']}</td>
+                    <td>{$row['author']}</td>
+                    <td><span class='borrower-link' data-isbn='{$isbn}' data-book-id='{$book_id}'>{$borrowerCount}</span></td>
+                    <td>{$row['available_copies']}</td>
+                  </tr>";
+            }
+        } else {
+            echo "<tr><td colspan='6'>No loaned books found</td></tr>";
+        }
+        ?>
+    </tbody>
+</table>
+
+<!-- Floating Box to show borrower details -->
+<div id="floating-box" class="floating-box">
+    <h2>Borrower Details</h2>
+    <ul id="borrower-list"></ul>
+    <button id="close-box">Close</button>
+</div>
+
+<script>
+// Floating box functionality to fetch and display borrower details
+document.addEventListener('DOMContentLoaded', () => {
+    const borrowerLinks = document.querySelectorAll('.borrower-link');
+    const floatingBox = document.getElementById('floating-box');
+    const borrowerList = document.getElementById('borrower-list');
+
+    borrowerLinks.forEach(link => {
+        link.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const isbn = link.getAttribute('data-isbn');
+            const bookId = link.getAttribute('data-book-id');
+
+            // Fetch borrowers data
+            const response = await fetch(`fetchbook.php?isbn=${isbn}&book_id=${bookId}`);
+            const borrowers = await response.json();
+
+            borrowerList.innerHTML = ''; // Clear previous content
+            borrowers.forEach(borrower => {
+                const listItem = document.createElement('li');
+                const borrowDate = new Date(borrower.borrow_date).toLocaleDateString();
+                listItem.textContent = `Borrower ID: ${borrower.borrower_id}, Name: ${borrower.borrower_name} (Referral Code: ${borrower.referral_code}, Borrowed on: ${borrowDate})`;
+                borrowerList.appendChild(listItem);
+            });
+
+            // Display floating box at the cursor position
+            const rect = link.getBoundingClientRect();
+            floatingBox.style.left = `${rect.left}px`;
+            floatingBox.style.top = `${rect.bottom + window.scrollY + 10}px`;
+            floatingBox.style.display = 'block';
+        });
+    });
+
+    // Close the floating box when "Close" button is clicked
+    document.getElementById('close-box').addEventListener('click', () => {
+        floatingBox.style.display = 'none';
+    });
+
+    // Close the floating box when clicking outside of it
+    document.addEventListener('click', (e) => {
+        if (!floatingBox.contains(e.target) && !e.target.classList.contains('borrower-link')) {
+            floatingBox.style.display = 'none';
+        }
+    });
+});
+</script>
+
+</body>
+</html>
+
+
+UPDATE loans
+SET due_date = DATE_ADD(borrow_date, INTERVAL 15 DAY)
+WHERE borrow_date IS NOT NULL;
+
+
+8.12.245
+
+CREATE TABLE overdue_books_fines (
+    id INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for each record
+    borrower_id INT NOT NULL, -- Reference to the borrower
+    book_id INT NOT NULL, -- Reference to the book
+    borrower_name VARCHAR(255) NOT NULL, -- Name of the borrower
+    borrower_email VARCHAR(255) NOT NULL, -- Email of the borrower
+    book_title VARCHAR(255) NOT NULL, -- Title of the book
+    due_date DATE NOT NULL, -- Due date of the book
+    fine_amount DECIMAL(10, 2) NOT NULL, -- Fine amount calculated based on overdue days
+    overdue_days INT NOT NULL, -- Number of days the book is overdue
+    fine_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date when the fine was applied
+    FOREIGN KEY (borrower_id) REFERENCES borrowers(id), -- Borrower reference
+    FOREIGN KEY (book_id) REFERENCES books(book_id) -- Book reference
+);
+
+
+
+
+CREATE TABLE fine (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    borrower_id INT NOT NULL,
+    total_fine DECIMAL(10, 2) NOT NULL,
+    paid_date DATE NOT NULL,
+    FOREIGN KEY (borrower_id) REFERENCES borrowers(id)
+);

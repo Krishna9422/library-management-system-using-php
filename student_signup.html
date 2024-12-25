@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration with OTP</title>
+    <link rel="stylesheet" href="./style/home.css">
+    <script>
+        // Client-side validation
+        function validateForm() {
+            var name = document.getElementById("name").value;
+            var namePattern = /^[A-Za-z ]+$/;
+            if (!name.match(namePattern)) {
+                alert("Name should not contain any symbols or numbers.");
+                return false;
+            }
+
+            var email = document.getElementById("email").value;
+            var emailPattern = /^[a-zA-Z0-9._%+-]+@mgmcen\.ac\.in$/;
+            if (!email.match(emailPattern)) {
+                alert("Email should end with @mgmcen.ac.in.");
+                return false;
+            }
+
+            var password = document.getElementById("password").value;
+            var passwordPattern = /^(?=.*[A-Z])(?=.*[\W_]).+$/;
+            if (!password.match(passwordPattern)) {
+                alert("Password should contain at least one capital letter and one symbol.");
+                return false;
+            }
+
+            return true;
+        }
+
+        function checkPasswordStrength(password) {
+            const strengthBar = document.getElementById("password-strength-bar");
+            const strengthText = document.getElementById("password-strength-text");
+
+            const regexWeak = /^(?=.*[a-z]).{6,}$/;
+            const regexMedium = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            const regexStrong = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
+
+            if (regexStrong.test(password)) {
+                strengthBar.style.width = "100%";
+                strengthBar.style.backgroundColor = "green";
+                strengthText.textContent = "Strong password";
+                strengthText.style.color = "green";
+            } else if (regexMedium.test(password)) {
+                strengthBar.style.width = "66%";
+                strengthBar.style.backgroundColor = "orange";
+                strengthText.textContent = "Medium password";
+                strengthText.style.color = "orange";
+            } else if (regexWeak.test(password)) {
+                strengthBar.style.width = "33%";
+                strengthBar.style.backgroundColor = "red";
+                strengthText.textContent = "Weak password";
+                strengthText.style.color = "red";
+            } else {
+                strengthBar.style.width = "10%";
+                strengthBar.style.backgroundColor = "darkred";
+                strengthText.textContent = "Very weak password";
+                strengthText.style.color = "darkred";
+            }
+        }
+    </script>
+    <style>
+        /* Navbar styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: violet;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        nav ul.list {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul.list li {
+            margin: 0 15px;
+        }
+        h2{
+            text-align: center;
+            color: #4A4A4A;
+            margin-top: 20px;}
+
+        nav ul.list li a {
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 8px 16px;
+            transition: color 0.3s, background-color 0.3s;
+        }
+
+        nav ul.list li a:hover {
+            background-color: #fc25f8;
+            border-radius: 5px;
+        }
+
+        /* Password Strength Bar Styles */
+        #password-strength {
+            height: 5px;
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            margin: 5px 0;
+        }
+
+        #password-strength-bar {
+            height: 100%;
+            width: 0;
+            background-color: red;
+            border-radius: 3px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        #password-strength-text {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* Form styles */
+        form {
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        form input[type="email"],
+        form input[type="password"],
+        form input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: violet;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #5f3db5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://www.mgmmcha.org/images/logos/mgmlogo.png" alt="College Logo" class="logo">
+        <nav>
+            <ul class="list">
+                <li><a href="http://localhost/library_final/index.html">Home</a></li>
+                <li><a href="http://localhost/library_final/book.php">Books</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <h2>Student Signup</h2>
+    <form id="registrationForm" method="POST" action="register_student.php" onsubmit="return validateForm()">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required oninput="checkPasswordStrength(this.value)">
+        <div id="password-strength">
+            <div id="password-strength-bar"></div>
+        </div>
+        <span id="password-strength-text"></span><br>
+
+        <button type="submit" name="submit">Register</button>
+    </form>
+</body>
+</html>

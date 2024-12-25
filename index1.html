@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <style>
+       
+    
+        .dropdown {
+            position: relative;
+        }
+    
+        .dropdown-menu {
+            display: none; /* Hide the dropdown by default */
+            position: absolute;
+            background-color: #6a1b9a; /* Purple */
+            min-width: 160px;
+            z-index: 1;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    
+        .dropdown:hover .dropdown-menu {
+            display: block; /* Show the dropdown on hover */
+        }
+    
+        .dropdown-menu li {
+            list-style-type: none;
+        }
+    
+        .dropdown-menu li a {
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+    
+        .dropdown-menu li a:hover {
+            background-color: #ff4081; /* Pink */
+            border-radius: 5px;
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+    
+        header {
+            background-color: #4a148c; /* Dark purple */
+            padding: 20px;
+            text-align: center;
+        }
+    
+        .logo {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+    
+        nav {
+            background-color: #6a1b9a; /* Purple */
+            padding: 10px;
+        }
+    
+        .list {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    
+        .list li {
+            position: relative;
+        }
+    
+        .list li a {
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease;
+        }
+    
+        .list li a:hover {
+            background-color: #ff4081; /* Pink */
+            border-radius: 5px;
+        }
+    
+        .hero {
+            background-image: url("./pexels-cottonbro-6344231.jpg");
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+        }
+    
+        .hero h1 {
+            font-size: 3em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+    
+        .hero p {
+            font-size: 1.2em;
+            margin-top: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+    
+        .about {
+            background-color: #ffffff; /* White */
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+    
+        .about h2 {
+            color: #6a1b9a; /* Purple */
+        }
+    
+        .about h3 {
+            margin: 10px 0;
+            font-size: 1.5em;
+        }
+    
+        .about h4 {
+            margin: 5px 0;
+            font-size: 1.2em;
+            color: #4a148c; /* Dark purple */
+        }
+    
+        .about img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    
+        footer {
+            background-color: #4a148c; /* Dark purple */
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+
+</head>
+<body>
+
+<header>  
+    <img src="https://www.mgmmcha.org/images/logos/mgmlogo.png" alt="College Logo" class="logo">
+    
+    <nav>
+        <ul class="list">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="http://localhost/library_final/book.php">Books</a></li>
+            <li><a href="http://localhost/library_final/manager-login.php">Staff Login</a></li>
+            <li><a href="http://localhost/library_final/login.php">Student Login</a></li>
+            <li class="dropdown">
+                <a href="#"><b>Login</b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="register.html">Student Login</a></li>
+                    <li><a href="tpo_register.html">Staff Login</a></li>
+                    
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</header>
+    <main>
+       
+    <section class="hero" >
+        <h1>Manage Your Library Efficiently</h1><br><br>
+        <p>Welcome to the Library Management System.<br><br>Here, you can manage books, keep track of loans, and ensure the library is well-organized. Use the navigation links to get started.</p>
+    </section>
+
+    <div class="about">
+        <h2>About Us</h2>
+        <h3>Head of Library</h3>
+        <h4>Hambarde</h4>
+        <img src="./pexels-cottonbro-6344231.jpg" alt="Head of Library Photo">
+    </div>
+
+    <footer>
+        <p> Library Management</p>
+    </footer>
+</body>
+</html>

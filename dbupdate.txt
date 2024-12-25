@@ -1,0 +1,4 @@
+
+ALTER TABLE loans ADD due_date DATE;
+UPDATE loans 
+SET due_date = DATE_ADD(borrow_date, INTERVAL 15 DAY);

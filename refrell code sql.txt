@@ -1,0 +1,211 @@
+CREATE TABLE book_copies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT,
+    title VARCHAR(255),
+    isbn VARCHAR(20),
+    referral_code VARCHAR(50) UNIQUE,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+DELIMITER //
+
+CREATE PROCEDURE GenerateBookCopies()
+BEGIN
+    DECLARE i INT;
+    DECLARE total INT;
+    DECLARE book_title VARCHAR(255);
+    DECLARE book_isbn VARCHAR(20);
+    DECLARE book_id INT;
+
+    DECLARE cur CURSOR FOR 
+        SELECT book_id, title, isbn, available_copies FROM books;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO book_id, book_title, book_isbn, total;
+
+        IF total IS NULL THEN
+            LEAVE read_loop;
+        END IF;
+
+        SET i = 1;
+        
+        copy_loop: WHILE i <= total DO
+            INSERT INTO book_copies (book_id, title, isbn, referral_code)
+            VALUES (
+                book_id, 
+                book_title, 
+                book_isbn, 
+                CONCAT(isbn, '-', LPAD(i, 4, '0')) -- Custom referral code format
+            );
+            SET i = i + 1;
+        END WHILE;
+    END LOOP;
+
+    CLOSE cur;
+END //
+
+DELIMITER ;
+
+
+CALL GenerateBookCopies();
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE GenerateBookCopies(new_book_id INT)
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE total INT;
+    DECLARE book_title VARCHAR(255);
+    DECLARE book_isbn VARCHAR(20);
+
+    -- Retrieve details of the book with the given book_id
+    SELECT title, isbn, available_copies INTO book_title, book_isbn, total
+    FROM books
+    WHERE id = new_book_id;
+
+    -- Check if the ISBN already exists in the book_copies table
+    IF NOT EXISTS (
+        SELECT 1 FROM book_copies WHERE isbn = book_isbn
+    ) THEN
+        -- Only proceed if the ISBN is not already in book_copies
+        copy_loop: WHILE i <= total DO
+            INSERT INTO book_copies (book_id, title, isbn, referral_code)
+            VALUES (
+                new_book_id, 
+                book_title, 
+                book_isbn, 
+                CONCAT(book_isbn, '-', LPAD(i, 4, '0')) -- Custom referral code format
+            );
+            SET i = i + 1;
+        END WHILE;
+    ELSE
+        -- Optionally, you could add a message to log or signal that copies were not generated due to existing ISBN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ISBN already exists in book_copies. No copies created.';
+    END IF;
+END //
+
+DELIMITER ;
+
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE GenerateBookCopies9()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE i INT DEFAULT 1;
+    DECLARE total INT;
+    DECLARE book_title VARCHAR(255);
+    DECLARE book_isbn VARCHAR(20);
+    DECLARE book_id INT;
+
+    -- Cursor to iterate over all books in the books table
+    DECLARE cur CURSOR FOR
+        SELECT book_id, title, isbn, available_copies FROM books;
+
+    -- Declare a handler to handle the end of the cursor
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    -- Open the cursor
+    OPEN cur;
+
+    -- Loop through each book
+    read_loop: LOOP
+        -- Fetch the next book's details
+        FETCH cur INTO book_id, book_title, book_isbn, total;
+
+        -- If there are no more rows, exit the loop
+        IF done = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Check if the ISBN already exists in the book_copies table
+        IF NOT EXISTS (
+            SELECT 1 FROM book_copies WHERE isbn = book_isbn
+        ) THEN
+            -- Only proceed if the ISBN is not already in book_copies
+            SET i = 1;
+
+            copy_loop: WHILE i <= total DO
+                INSERT INTO book_copies (book_id, title, isbn, referral_code)
+                VALUES (
+                    book_id, 
+                    book_title, 
+                    book_isbn, 
+                    CONCAT(book_isbn, '-', LPAD(i, 4, '0')) -- Custom referral code format
+                );
+                SET i = i + 1;
+            END WHILE;
+        END IF;
+    END LOOP;
+
+    -- Close the cursor
+    CLOSE cur;
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE GenerateBookCopies11()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE i INT DEFAULT 1;
+    DECLARE total INT;
+    DECLARE book_title VARCHAR(255);
+    DECLARE book_isbn VARCHAR(20);
+    DECLARE book_id INT;
+
+    -- Cursor to iterate over all books in the books table
+    DECLARE cur CURSOR FOR
+        SELECT id, title, isbn, available_copies FROM books;
+
+    -- Declare a handler to handle the end of the cursor
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    -- Open the cursor
+    OPEN cur;
+
+    -- Loop through each book
+    read_loop: LOOP
+        -- Fetch the next book's details
+        FETCH cur INTO book_id, book_title, book_isbn, total;
+
+        -- If there are no more rows, exit the loop
+        IF done = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Check if the ISBN already exists in the book_copies table
+        IF NOT EXISTS (
+            SELECT 1 FROM book_copies WHERE isbn = book_isbn
+        ) THEN
+            -- Only proceed if the ISBN is not already in book_copies
+            SET i = 1;
+
+            copy_loop: WHILE i <= total DO
+                INSERT INTO book_copies (book_id, title, isbn, referral_code)
+                VALUES (
+                    book_id, 
+                    book_title, 
+                    book_isbn, 
+                    CONCAT(book_isbn, '-', LPAD(i, 4, '0')) -- Custom referral code format
+                );
+                SET i = i + 1;
+            END WHILE;
+        END IF;
+    END LOOP;
+
+    -- Close the cursor
+    CLOSE cur;
+END //
+
+DELIMITER ;
